@@ -113,3 +113,99 @@ namespace #YOURNAMESPACE#
         }
     }
 }
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// ALTERNATIVE 2, WITH COSMOS BINDINGS /////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Microsoft.Azure.Documents.Client;
+
+namespace #YOURNAMESPACE#
+{
+    public static class ProductsApi
+    {
+		private static string EndpointUrl = System.Environment.GetEnvironmentVariable("EndpointUrl");
+        private static string PrimaryKey = System.Environment.GetEnvironmentVariable("PrimaryKey"); 
+		private static DocumentClient client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
+
+        [FunctionName("GetAllProducts")]
+        public static async Task<IActionResult> GetAll([HttpTrigger(AuthorizationLevel.Function, "get", Route = "products")]
+    HttpRequest req, [CosmosDB(
+            databaseName: "Products",
+            collectionName: "Products",
+            ConnectionStringSetting = "CosmosDbCnString")] JArray products, ILogger log)
+        {
+            log.LogDebug("GetProducts function processed a request.");
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            if (products != null)
+            {
+                return new OkObjectResult(products);
+            }
+            else
+            {
+                return new NotFoundResult();
+            }
+        }
+
+        [FunctionName("GetProduct")]
+        public static async Task<IActionResult> GetProduct([HttpTrigger(AuthorizationLevel.Function, "get", Route = "products/{category}/{id}")]
+    HttpRequest req, [CosmosDB(
+            databaseName: "Products",
+            collectionName: "Products",
+            ConnectionStringSetting = "CosmosDbCnString",Id = "{id}",PartitionKey = "{category}")] Product product , ILogger log)
+        {
+            log.LogDebug("GetProduct function processed a request, path {0}.",req.Path);
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+            if (product != null)
+            {
+                return new OkObjectResult(product);
+            }
+            else
+            {
+                return new NotFoundResult();
+            }
+       
+        }
+
+        [FunctionName("SetProduct")]
+        public static void SetProduct([HttpTrigger(AuthorizationLevel.Function, "post", Route = "products")]
+    HttpRequest req, [CosmosDB(
+            databaseName: "Products",
+            collectionName: "Products",
+            ConnectionStringSetting = "CosmosDbCnString")] out dynamic document, ILogger log)
+        {
+            log.LogDebug("SetProduct function processed a request.");
+            string requestBody = new StreamReader(req.Body).ReadToEnd();
+            var product = JsonConvert.DeserializeObject<Product>(requestBody);
+            document = product;
+        }
+
+        [FunctionName("DeleteProduct")]
+        public static async Task<IActionResult> DeleteProduct([HttpTrigger(AuthorizationLevel.Function, "Delete", Route = "products/{category}/{id}")]
+    HttpRequest req, ILogger log)
+        {
+            log.LogInformation("CreateProduct function processed a request.");
+            Document doc = await client.ReadDocumentAsync(
+                UriFactory.CreateDocumentUri(DatabaseName, CollectionName, id),
+                new RequestOptions { PartitionKey = new PartitionKey(category) });
+            await client.DeleteDocumentAsync(doc.SelfLink,
+                new RequestOptions { PartitionKey = new PartitionKey(category) });
+            return new OkResult();
+        }
+    }
+}
