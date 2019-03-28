@@ -16,10 +16,13 @@ namespace OrganizerWebApp
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Startup.Configuration = configuration;
+
+            Helpers.DocumentDBRepository<OrganizerWebApp.Models.Supplier>.Initialize();
         }
 
-        public IConfiguration Configuration { get; }
+        //public IConfiguration Configuration { get; }
+        internal static IConfiguration Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -33,6 +36,8 @@ namespace OrganizerWebApp
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,9 +59,12 @@ namespace OrganizerWebApp
 
             app.UseMvc(routes =>
             {
+                //routes.MapRoute(
+                //    name: "default",
+                //    template: "{controller=Home}/{action=Index}/{id?}");
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Supplier}/{action=Index}/{id?}");
             });
         }
     }
