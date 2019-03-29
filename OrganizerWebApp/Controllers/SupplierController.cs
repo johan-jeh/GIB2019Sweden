@@ -33,7 +33,7 @@ namespace OrganizerWebApp.Controllers
         [HttpPost]
         [ActionName("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateAsync([Bind("Name","ApiBaseUrl", "ApiSubscriptionKey")] Supplier item)
+        public async Task<ActionResult> CreateAsync([Bind("Name","ApiBaseUrl", "ApiSubscriptionKey", "StorageBaseUrl")] Supplier item)
         {
             item.Id = System.Guid.NewGuid().ToString();
             // I know this is a hack, but it just needs to work on 2019-03-30
@@ -51,7 +51,7 @@ namespace OrganizerWebApp.Controllers
         [HttpPost]
         [ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync([Bind("Id", "Name", "ApiBaseUrl", "ApiSubscriptionKey", "RegistrationTime")] Supplier item)
+        public async Task<ActionResult> EditAsync([Bind("Id", "Name", "ApiBaseUrl", "ApiSubscriptionKey", "StorageBaseUrl", "RegistrationTime")] Supplier item)
         {
             if (ModelState.IsValid)
             {
@@ -93,7 +93,15 @@ namespace OrganizerWebApp.Controllers
             var streamTask = client.GetStreamAsync(new Uri(new Uri(item.ApiBaseUrl),"products"));
             var products = serializer.ReadObject(await streamTask) as List<Product>;
 
-            return View(products.OrderBy(p => p.productName));
+            if (!string.IsNullOrEmpty(item.StorageBaseUrl))
+            {
+                foreach (var product in products)
+                {
+                    product.imageUrl = new Uri(new Uri(item.StorageBaseUrl), $"thumbnails/{product.productNumber}.jpg").ToString();
+                }
+            }
+
+            return View(products.OrderBy(p => p.productNumber));
         }
     }
 }

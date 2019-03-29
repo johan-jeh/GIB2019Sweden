@@ -12,5 +12,6 @@ namespace OrganizerWebApp.Models
         public string category { get; set; }
         public string productName { get; set; }
         public string description { get; set; }
+        public string imageUrl { get; set; }
     }
 }
