@@ -14,6 +14,9 @@
     <thead>
         <tr>
             <th>
+                @Html.Raw("Logo")
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
@@ -26,14 +29,21 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                @if (!string.IsNullOrEmpty(item.StorageBaseUrl))
+                {
+                    <img src="@Url.Content(new Uri(new Uri(item.StorageBaseUrl), "thumbnails/logo.jpg").ToString())" alt="n/a" />
+                    
+                }
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.RegistrationTime)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-                @Html.ActionLink("Products", "Products", new { id=item.Id })
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Products", "Products", new { id = item.Id })
             </td>
         </tr>
 }

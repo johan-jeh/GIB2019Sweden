@@ -22,6 +22,10 @@ namespace OrganizerWebApp.Models
         [JsonProperty(PropertyName = "apiSubscriptionKey")]
         public string ApiSubscriptionKey { get; set; }
 
+        // URL to the image storage
+        [JsonProperty(PropertyName = "storageBaseUrl")]
+        public string StorageBaseUrl { get; set; }
+
         [JsonProperty(PropertyName = "registrationTime")]
         public string RegistrationTime { get; set; }
     }
