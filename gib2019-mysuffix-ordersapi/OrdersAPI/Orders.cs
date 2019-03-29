@@ -67,13 +67,13 @@ namespace OrdersAPI
            [CosmosDB(
                 databaseName: "Products",
                 collectionName: "Orders",
-                ConnectionStringSetting = "CosmosDBConnectionString")]out OrderModel document,
+                ConnectionStringSetting = "CosmosDBConnectionString")]out OrderUpdateModel document,
            ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function processed a request. Create orders");
 
             string requestBody = new StreamReader(req.Body).ReadToEnd();
-            document = JsonConvert.DeserializeObject<OrderModel>(requestBody);
+            document = JsonConvert.DeserializeObject<OrderUpdateModel>(requestBody);
             document.status = "Created";
             log.LogInformation($"Order Created in Cosmos: {(string)document.orderNumber}");
             return new OkObjectResult(document);
