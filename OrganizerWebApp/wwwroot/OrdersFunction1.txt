@@ -1,0 +1,92 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+
+namespace OrdersAPI
+{
+    public static class OrdersMock
+    {
+
+        private static OrderModel[] mockdata = new OrderModel[] {
+            new OrderModel()
+            {
+                customer = "mockCustomer",
+                customerEmail = "mocked@email.se",
+                deliveryDate = DateTime.Today,
+                orderNumber = "11111",
+                reference = "mocked",
+                status = "Created",
+                lines  = new OrderLineModel[]
+                {
+                    new OrderLineModel()
+                    {
+                        lineId = "01",
+                        productNumber = "1",
+                        quantity = 1,
+                        comment = "mocked"
+                    }
+                }
+            }
+            };
+
+        [FunctionName("GetOrders")]
+        public static async Task<IActionResult> GetAll(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "orders")] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation($"C# HTTP trigger function processed a request. requesting for orders");
+
+            return (ActionResult)new OkObjectResult(mockdata);
+        }
+
+        [FunctionName("GetOrdersById")]
+        public static async Task<IActionResult> GetByOrderNumber(
+           [HttpTrigger(AuthorizationLevel.Function, "get", Route = "orders/{orderid}")] HttpRequest req,
+           ILogger log)
+        {
+            log.LogInformation($"C# HTTP trigger function processed a request. requesting for orders");
+             return (ActionResult)new OkObjectResult(mockdata[0]);
+
+        }
+
+        [FunctionName("CreateOrder")]
+        public static IActionResult CreateOrder(
+           [HttpTrigger(AuthorizationLevel.Function, "post", Route = "orders")] HttpRequest req,
+           ILogger log)
+        {
+            log.LogInformation($"C# HTTP trigger function processed a request. Create orders");
+
+            string requestBody = new StreamReader(req.Body).ReadToEnd();
+            var document = JsonConvert.DeserializeObject<OrderUpdateModel>(requestBody);
+            document.status = "Created";
+            log.LogInformation($"Order Created in Cosmos: {(string)document.orderNumber}");
+            return new OkObjectResult(document);
+        }
+
+        [FunctionName("UpdateOrder")]
+        public static IActionResult UpdateOrder(
+           [HttpTrigger(AuthorizationLevel.Function, "put", Route = "orders/{orderid}")] HttpRequest req,           
+           string orderid,
+           ILogger log)
+        {
+            log.LogInformation($"C# HTTP trigger function processed a request. Update orders");
+
+
+
+            string requestBody = new StreamReader(req.Body).ReadToEnd();
+            var document = JsonConvert.DeserializeObject<OrderUpdateModel>(requestBody);
+            document.status = "Updated";
+            document.orderNumber = orderid;
+       
+            log.LogInformation($"Order updated in Cosmos: {(string)document.orderNumber}");
+            return new OkObjectResult(document);
+        }
+    }
+}
