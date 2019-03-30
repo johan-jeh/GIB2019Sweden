@@ -37,7 +37,7 @@ namespace OrdersAPI
             };
 
         [FunctionName("GetOrders")]
-        public static async Task<IActionResult> GetAll(
+        public static async Task&lt;IActionResult&gt; GetAll(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "orders")] HttpRequest req,
             ILogger log)
         {
@@ -47,7 +47,7 @@ namespace OrdersAPI
         }
 
         [FunctionName("GetOrdersById")]
-        public static async Task<IActionResult> GetByOrderNumber(
+        public static async Task&lt;IActionResult&gt; GetByOrderNumber(
            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "orders/{orderid}")] HttpRequest req,
            ILogger log)
         {
@@ -64,7 +64,7 @@ namespace OrdersAPI
             log.LogInformation($"C# HTTP trigger function processed a request. Create orders");
 
             string requestBody = new StreamReader(req.Body).ReadToEnd();
-            var document = JsonConvert.DeserializeObject<OrderUpdateModel>(requestBody);
+            var document = JsonConvert.DeserializeObject&lt;OrderUpdateModel&gt;(requestBody);
             document.status = "Created";
             log.LogInformation($"Order Created in Cosmos: {(string)document.orderNumber}");
             return new OkObjectResult(document);
@@ -81,7 +81,7 @@ namespace OrdersAPI
 
 
             string requestBody = new StreamReader(req.Body).ReadToEnd();
-            var document = JsonConvert.DeserializeObject<OrderUpdateModel>(requestBody);
+            var document = JsonConvert.DeserializeObject&lt;OrderUpdateModel&gt;(requestBody);
             document.status = "Updated";
             document.orderNumber = orderid;
        
@@ -90,3 +90,4 @@ namespace OrdersAPI
         }
     }
 }
+

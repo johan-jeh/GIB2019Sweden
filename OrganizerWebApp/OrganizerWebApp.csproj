@@ -23,6 +23,12 @@
     <Content Update="Views\OrdersFunction2\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="wwwroot\OrdersFunction1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\OrdersFunction2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\ProductsFunction2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

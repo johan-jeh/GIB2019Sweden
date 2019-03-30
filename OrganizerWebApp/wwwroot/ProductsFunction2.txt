@@ -32,7 +32,7 @@ namespace #YOURNAMESPACE#
         private static DocumentClient client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
 
         [FunctionName("GetProducts")]
-        public static async Task<Product[]> GetAll(
+        public static async Task&lt;Product[]&gt; GetAll(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "products")]
             HttpRequest req,
             ILogger log)
@@ -41,11 +41,11 @@ namespace #YOURNAMESPACE#
 
             int count = 0;
             string continuation = string.Empty;
-            List<Product> products = new List<Product>();
+            List&lt;Product&gt; products = new List&lt;Product&gt;();
             do
             {
                 // Read the feed 10 items at a time until there are no more items to read
-                FeedResponse<dynamic> response = await client.ReadDocumentFeedAsync(
+                FeedResponse&lt;dynamic&gt; response = await client.ReadDocumentFeedAsync(
                     UriFactory.CreateDocumentCollectionUri(DatabaseName, CollectionName),
                     new FeedOptions
                     {
@@ -73,21 +73,21 @@ namespace #YOURNAMESPACE#
         }
 
         [FunctionName("GetProduct")]
-        public static async Task<Product> Get(
+        public static async Task&lt;Product&gt; Get(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "products/{category}/{id}")] HttpRequest req,
             string category, 
             string id,
             ILogger log)
         {
             log.LogInformation("GetProduct function processed a request.");
-            Product product = await client.ReadDocumentAsync<Product>(
+            Product product = await client.ReadDocumentAsync&lt;Product&gt;(
                 UriFactory.CreateDocumentUri(DatabaseName, CollectionName, id), 
                 new RequestOptions { PartitionKey = new PartitionKey(category) });
             return product;
         }
 
         [FunctionName("CreateProduct")]
-        public static async Task<CreatedResult> Create(
+        public static async Task&lt;CreatedResult&gt; Create(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "products")] Product product,
             ILogger log)
         {
@@ -97,7 +97,7 @@ namespace #YOURNAMESPACE#
         }
 
         [FunctionName("DeleteProduct")]
-        public static async Task<OkResult> Delete(
+        public static async Task&lt;OkResult&gt; Delete(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "products/{category}/{id}")] HttpRequest req,
             string category,
             string id,
@@ -143,7 +143,7 @@ namespace #YOURNAMESPACE#
 		private static DocumentClient client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
 
         [FunctionName("GetAllProducts")]
-        public static async Task<IActionResult> GetAll([HttpTrigger(AuthorizationLevel.Function, "get", Route = "products")]
+        public static async Task&lt;IActionResult&gt; GetAll([HttpTrigger(AuthorizationLevel.Function, "get", Route = "products")]
     HttpRequest req, [CosmosDB(
             databaseName: "Products",
             collectionName: "Products",
@@ -162,7 +162,7 @@ namespace #YOURNAMESPACE#
         }
 
         [FunctionName("GetProduct")]
-        public static async Task<IActionResult> GetProduct([HttpTrigger(AuthorizationLevel.Function, "get", Route = "products/{category}/{id}")]
+        public static async Task&lt;IActionResult&gt; GetProduct([HttpTrigger(AuthorizationLevel.Function, "get", Route = "products/{category}/{id}")]
     HttpRequest req, [CosmosDB(
             databaseName: "Products",
             collectionName: "Products",
@@ -191,12 +191,12 @@ namespace #YOURNAMESPACE#
         {
             log.LogDebug("SetProduct function processed a request.");
             string requestBody = new StreamReader(req.Body).ReadToEnd();
-            var product = JsonConvert.DeserializeObject<Product>(requestBody);
+            var product = JsonConvert.DeserializeObject&lt;Product&gt;(requestBody);
             document = product;
         }
 
         [FunctionName("DeleteProduct")]
-        public static async Task<IActionResult> DeleteProduct([HttpTrigger(AuthorizationLevel.Function, "Delete", Route = "products/{category}/{id}")]
+        public static async Task&lt;IActionResult&gt; DeleteProduct([HttpTrigger(AuthorizationLevel.Function, "Delete", Route = "products/{category}/{id}")]
     HttpRequest req, ILogger log)
         {
             log.LogInformation("CreateProduct function processed a request.");
@@ -209,3 +209,4 @@ namespace #YOURNAMESPACE#
         }
     }
 }
+

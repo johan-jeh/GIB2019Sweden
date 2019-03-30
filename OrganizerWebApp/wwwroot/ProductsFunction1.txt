@@ -24,7 +24,7 @@ namespace #YOURNAMESPACE#
         static Product[] sampleProducts = new Product[] { new Product { id = "1", productNumber = 1, category = "Bicycles", productName = "Speeder", description = "Pretty AND Fast." } };
 
         [FunctionName("GetProducts")]
-        public static async Task<Product[]> GetAll(
+        public static async Task&lt;Product[]&gt; GetAll(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "products")] HttpRequest req,
             ILogger log)
         {
@@ -33,7 +33,7 @@ namespace #YOURNAMESPACE#
         }
 
         [FunctionName("GetProduct")]
-        public static async Task<Product> Get(
+        public static async Task&lt;Product&gt; Get(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "products/{category}/{id}")] HttpRequest req,
             string category, 
             string id,
@@ -44,7 +44,7 @@ namespace #YOURNAMESPACE#
         }
 
         [FunctionName("CreateProduct")]
-        public static async Task<CreatedResult> Create(
+        public static async Task&lt;CreatedResult&gt; Create(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "products")] Product product,
             ILogger log)
         {
@@ -55,7 +55,7 @@ namespace #YOURNAMESPACE#
         }
 
         [FunctionName("DeleteProduct")]
-        public static async Task<OkResult> Delete(
+        public static async Task&lt;OkResult&gt; Delete(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "products/{category}/{id}")] HttpRequest req,
             string category,
             string id,
@@ -66,3 +66,4 @@ namespace #YOURNAMESPACE#
         }
     }
 }
+

@@ -15,9 +15,9 @@ namespace OrdersAPI
     {
         
         [FunctionName("GetOrders")]
-        public static async Task<IActionResult> GetAll(
+        public static async Task&lt;IActionResult&gt; GetAll(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "orders")] HttpRequest req,
-            [CosmosDB("Products", "Orders", ConnectionStringSetting = "CosmosDBConnectionString", SqlQuery = "select * from orders")] IEnumerable<OrderModel> item,
+            [CosmosDB("Products", "Orders", ConnectionStringSetting = "CosmosDBConnectionString", SqlQuery = "select * from orders")] IEnumerable&lt;OrderModel&gt; item,
             ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function processed a request. requesting for orders");
@@ -26,9 +26,9 @@ namespace OrdersAPI
         }
 
         [FunctionName("GetOrdersById")]
-        public static async Task<IActionResult> GetByOrderNumber(
+        public static async Task&lt;IActionResult&gt; GetByOrderNumber(
            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "orders/{orderid}")] HttpRequest req,
-           [CosmosDB("Products", "Orders", ConnectionStringSetting = "CosmosDBConnectionString", SqlQuery = "select * from orders c where c.id = {orderid}")] IEnumerable<OrderModel> item,
+           [CosmosDB("Products", "Orders", ConnectionStringSetting = "CosmosDBConnectionString", SqlQuery = "select * from orders c where c.id = {orderid}")] IEnumerable&lt;OrderModel&gt; item,
            ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function processed a request. requesting for orders");
@@ -52,7 +52,7 @@ namespace OrdersAPI
             log.LogInformation($"C# HTTP trigger function processed a request. Create orders");
 
             string requestBody = new StreamReader(req.Body).ReadToEnd();
-            document = JsonConvert.DeserializeObject<OrderUpdateModel>(requestBody);
+            document = JsonConvert.DeserializeObject&lt;OrderUpdateModel&gt;(requestBody);
             document.status = "Created";
             log.LogInformation($"Order Created in Cosmos: {(string)document.orderNumber}");
             return new OkObjectResult(document);
@@ -65,7 +65,7 @@ namespace OrdersAPI
                 databaseName: "Products",
                 collectionName: "Orders",
                 ConnectionStringSetting = "CosmosDBConnectionString")]out OrderUpdateModel document,
-           [CosmosDB("Products", "Orders", ConnectionStringSetting = "CosmosDBConnectionString", SqlQuery = "select * from orders c where c.id = {orderid}")] IEnumerable<OrderUpdateModel> item,
+           [CosmosDB("Products", "Orders", ConnectionStringSetting = "CosmosDBConnectionString", SqlQuery = "select * from orders c where c.id = {orderid}")] IEnumerable&lt;OrderUpdateModel&gt; item,
            ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function processed a request. Update orders");
@@ -73,7 +73,7 @@ namespace OrdersAPI
 
 
             string requestBody = new StreamReader(req.Body).ReadToEnd();
-            document = JsonConvert.DeserializeObject<OrderUpdateModel>(requestBody);
+            document = JsonConvert.DeserializeObject&lt;OrderUpdateModel&gt;(requestBody);
             document.status = "Updated";
 
             var enumerator = item.GetEnumerator();
@@ -92,3 +92,4 @@ namespace OrdersAPI
         }
     }
 }
+

@@ -7,6 +7,16 @@
 
 <h2>Products</h2>
 
+@if (!string.IsNullOrEmpty(ViewBag.ERROR))
+{
+<div class="validation-summary-errors" data-valmsg-summary="true">
+    Cannot access URL: @Html.Raw(ViewBag.URL);
+    <br />
+    @Html.Raw(ViewBag.ERROR);
+</div>
+}
+else
+{
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -32,28 +42,30 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @if (!string.IsNullOrEmpty(item.imageUrl))
-                {
-                    <img src="@Url.Content(item.imageUrl)" alt="n/a" />
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.imageUrl))
+                    {
+                        <img src="@Url.Content(item.imageUrl)" alt="n/a" />
 
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.productNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.category)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.productName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.description)
-            </td>
-        </tr>
-}
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.productNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.category)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.productName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.description)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+}

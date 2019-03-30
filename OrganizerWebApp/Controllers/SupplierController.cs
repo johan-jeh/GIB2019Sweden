@@ -15,8 +15,6 @@ namespace OrganizerWebApp.Controllers
 {
     public class SupplierController : Controller
     {
-        private static readonly HttpClient client = new HttpClient();
-
         [ActionName("Index")]
         public async Task<ActionResult> IndexAsync()
         {
@@ -82,26 +80,45 @@ namespace OrganizerWebApp.Controllers
         [ActionName("Products")]
         public async Task<ActionResult> ProductsAsync(string id)
         {
-            Supplier item = await DocumentDBRepository<Supplier>.GetItemAsync(id);
-            
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", item.ApiSubscriptionKey);
-
-            var serializer = new DataContractJsonSerializer(typeof(List<Product>));
-            var streamTask = client.GetStreamAsync(new Uri(new Uri(item.ApiBaseUrl),"products"));
-            var products = serializer.ReadObject(await streamTask) as List<Product>;
-
-            if (!string.IsNullOrEmpty(item.StorageBaseUrl))
+            try
             {
-                foreach (var product in products)
-                {
-                    product.imageUrl = new Uri(new Uri(item.StorageBaseUrl), $"thumbnails/{product.productNumber}.jpg").ToString();
-                }
-            }
+                Supplier item = await DocumentDBRepository<Supplier>.GetItemAsync(id);
 
-            return View(products.OrderBy(p => p.productNumber));
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", item.ApiSubscriptionKey);
+
+                var serializer = new DataContractJsonSerializer(typeof(List<Product>));
+                var streamTask = client.GetStreamAsync(new Uri(new Uri(
+                    item.ApiBaseUrl.EndsWith('/') ? item.ApiBaseUrl : item.ApiBaseUrl + "/"), "products"));
+                var products = serializer.ReadObject(await streamTask) as List<Product>;
+
+                if (!string.IsNullOrEmpty(item.StorageBaseUrl))
+                {
+                    foreach (var product in products)
+                    {
+                        product.imageUrl = new Uri(new Uri(item.StorageBaseUrl), $"thumbnails/{product.productNumber}.jpg").ToString();
+                    }
+                }
+
+                ViewBag.ERROR = string.Empty;
+                return View(products.OrderBy(p => p.productNumber));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ERROR = ex.Message;
+                string url = string.Empty;
+                try
+                {
+                    Supplier item = await DocumentDBRepository<Supplier>.GetItemAsync(id);
+                    url = new Uri(new Uri(item.ApiBaseUrl), "products").ToString();
+                    ViewBag.URL = url;
+                }
+                catch (Exception ex2) { }
+                return View();
+            }
         }
     }
 }
